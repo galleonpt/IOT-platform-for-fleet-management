@@ -7,7 +7,7 @@
 
         // Environment Settings
         // See also https://aka.ms/tsconfig/module
-        "module": "commonjs",
+        "module": "esnext",
         "target": "esnext",
         "lib": ["esnext"],
         "types": ["node"],
@@ -29,6 +29,11 @@
         // "noFallthroughCasesInSwitch": true,
         // "noPropertyAccessFromIndexSignature": true,
 
+        // Decorator Support
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictPropertyInitialization": false,
+
         // Recommended Options
         "strict": true,
         "jsx": "react-jsx",
@@ -36,6 +41,8 @@
         "isolatedModules": true,
         "noUncheckedSideEffectImports": true,
         "moduleDetection": "force",
-        "skipLibCheck": true
+        "allowImportingTsExtensions": true,
+        "skipLibCheck": true,
+        "noEmit": true
     }
 }
