@@ -30,9 +30,18 @@ export class VehiclesRepository {
     /**
      * Retrieve all Vehicles from the system.
      *
-     * @returns {Promise<Vehicle>} The save result.
+     * @returns {Promise<Vehicle[]>} The save result.
      */
     public async getAll(): Promise<Vehicle[]> {
         return this.repository.find();
+    }
+
+    /**
+     * Retrieve a vehicle by id.
+     *
+     * @returns {Promise<Vehicle | null>} The matched result.
+     */
+    public async getById(id: number): Promise<Vehicle | null> {
+        return this.repository.findOneBy({ id });
     }
 }

@@ -1,3 +1,4 @@
+import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { Request, Response } from "express";
 import { Area } from "../../entities/area.model.ts";
@@ -14,10 +15,7 @@ class AreaController {
     createArea = async (request: Request, response: Response) => {
         try {
             // 1 - Validate payload
-            const payload = Object.assign(
-                new CreateAreaPayload(),
-                request.body,
-            );
+            const payload = plainToInstance(CreateAreaPayload, request.body);
             const errors = await validate(payload);
 
             if (errors.length > 0) {

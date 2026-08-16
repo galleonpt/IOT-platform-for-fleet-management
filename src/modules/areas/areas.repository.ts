@@ -35,4 +35,15 @@ export class AreasRepository {
     public async getAll(): Promise<Area[]> {
         return this.repository.find();
     }
+
+    /**
+     * Retrieves a single area by its identifier.
+     *
+     * @param {number} areaId The area identifier.
+     *
+     * @returns {Promise<Area | null>} The area record or null if not found.
+     */
+    public async getById(areaId: number): Promise<Area | null> {
+        return this.repository.findOneBy({ id: areaId });
+    }
 }
