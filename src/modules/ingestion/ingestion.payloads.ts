@@ -59,7 +59,7 @@ export class LocationData {
 
 export class TelemetryRecordData {
     @IsDateString()
-    recorded_at: string;
+    recorded_at: Date;
 
     @ValidateNested()
     @Type(() => LocationData)

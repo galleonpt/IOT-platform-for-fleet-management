@@ -3,8 +3,10 @@ import "reflect-metadata";
 import "dotenv/config";
 import express from "express";
 import { Migration } from "typeorm";
+import { mqttClient } from "./clients/mqtt.client.ts";
 import { postgresClient } from "./clients/postgres.client.ts";
 import { timescaleClient } from "./clients/timescale.client.ts";
+import mqttIngestionHandler from "./modules/ingestion/mqtt-ingestion.handler.ts";
 import router from "./router.ts";
 
 const app = express();
@@ -43,6 +45,27 @@ const startServer = async (): Promise<void> => {
                 error,
             ),
         );
+
+    // MQTT
+    mqttClient.subscribe(mqttIngestionHandler.topic, (error: any) => {
+        if (error) {
+            console.error(
+                "Error subscribing to MQTT telemetry topic. Proceeding regardless.",
+                error,
+            );
+        } else {
+            console.info(
+                `Subscribed to MQTT topic "${mqttIngestionHandler.topic}"`,
+            );
+        }
+    });
+
+    mqttClient.on(
+        "message",
+        (topic: string, message: Buffer<ArrayBufferLike>) => {
+            mqttIngestionHandler.handleMessage(topic, message);
+        },
+    );
 
     const PORT = process.env.PORT ?? 3333;
     app.listen(PORT, async () => {

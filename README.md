@@ -34,18 +34,19 @@ The implemented solution follows the logic of each vehicle having a single IOT d
 ```
 src/
 ├── clients/                   # Clients
-│   └── postgres.client-ts     # Postgres client
-│   └── timescale.client-ts    # Postgres client
+│   ├── postgres.client.ts     # Postgres client
+│   ├── timescale.client.ts    # TimescaleDB client
+│   └── mqtt.client.ts         # MQTT broker client
 ├── entities/                  # Data models
-│   └── area.model.ts          # Area schema
-│   └── vehicle.model.ts       # Vehicle schema
+│   ├── area.model.ts          # Area schema
+│   ├── vehicle.model.ts       # Vehicle schema
 │   └── telemetry.model.ts     # Sensor telemetry schema
 ├── modules/
 │   ├── areas/                 # Area/geofence management
 │   ├── vehicles/              # Vehicle fleet management
 │   └── ingestion/             # Data ingestion pipeline
 ├── migrations/                # Database migrations
-│   └── postgres/
+│   ├── postgres/
 │   └── timescale/
 ├── utils/                     # Helper functions
 └── router.ts                  # API routes
@@ -239,6 +240,40 @@ Request body:
 
 Response: `201 Created` (empty body)
 
+### MQTT Ingestion
+
+**Topic**: `vehicles/{vehicleId}/telemetry`
+
+A app subscreve o tópico com o wildcard `vehicles/+/telemetry`, aceitando uma **única leitura de telemetria por mensagem** (não um batch como no REST). O payload JSON tem a mesma forma de um elemento do array `data` do endpoint REST, sem wrapper.
+
+**Publish (via Postman MQTT client ou similar)**:
+
+```json
+{
+  "recorded_at": "2026-08-17T10:30:00Z",
+  "location": {
+    "latitude": 41.5538,
+    "longitude": -8.4269
+  },
+  "fuel": {
+    "value": 85,
+    "unit": "liters"
+  },
+  "speed": {
+    "value": 65,
+    "unit": "kilometers"
+  },
+  "engine_temperature": {
+    "value": 95,
+    "unit": "C"
+  }
+}
+```
+
+Mensagens inválidas (JSON malformado, campos em falta, unidades desconhecidas, etc.) são registadas e descartadas — nunca causam erro na aplicação.
+
+Para testar localmente: broker está em `localhost:1883` (sem autenticação/TLS). Ver `DOCKER_SETUP.md` para um guia passo-a-passo com o Postman.
+
 **Supported Units:**
 
 - **Fuel**: `liters`, `gallons`
@@ -301,6 +336,6 @@ Fleet vehicle registry:
 4. Improve observability with tools like sentry datadog, grafana, etc
 5. Add openApi docs
 6. Add tests
-7. Implement MQTT protocol
+7. ~~Implement MQTT protocol~~ ✓ Complete
 8. Deploy to Kubernetes (optional feature)
 9. CI/CD
